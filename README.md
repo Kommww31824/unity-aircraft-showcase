@@ -1,5 +1,7 @@
 # Unity 飞机展示与操控
 
+[在浏览器中试玩](https://kommww31824.github.io/unity-aircraft-showcase/)
+
 Unity / C# 项目源码作品集。
 
 固定与自由视角、射线选取部件、信息面板、跟随相机及独立的自发光粒子尾流。
