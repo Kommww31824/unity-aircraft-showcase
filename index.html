@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>飞机展示与操控</title><link rel="icon" href="data:,">
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101722;color:#e9f1fc;font:16px system-ui,sans-serif}main{max-width:1200px;margin:auto;padding:18px}h1{font-size:21px;margin:0 0 8px}p{margin:0 0 12px;color:#c0cfe0}canvas{display:block;margin:auto;background:#070b10;width:auto;height:auto;max-width:100%;max-height:78vh;outline:none}button{font:inherit;padding:6px 12px;cursor:pointer}#status{margin:8px 0}
+</style></head>
+<body><main><h1>飞机展示与操控</h1><p>从主菜单进入飞机展示或飞行。展示模式可尝试鼠标操作，飞行模式使用 WASD、Q/E、空格和左 Shift。</p><button id="full" hidden>全屏</button><p id="status" role="status">正在加载试玩版…</p><canvas id="game" width="960" height="600" tabindex="0"></canvas></main>
+<script type="application/json" id="chunks">{"Build/showcase.data.unityweb":["Build/showcase.data.unityweb.part00","Build/showcase.data.unityweb.part01","Build/showcase.data.unityweb.part02","Build/showcase.data.unityweb.part03","Build/showcase.data.unityweb.part04","Build/showcase.data.unityweb.part05","Build/showcase.data.unityweb.part06","Build/showcase.data.unityweb.part07","Build/showcase.data.unityweb.part08","Build/showcase.data.unityweb.part09","Build/showcase.data.unityweb.part10","Build/showcase.data.unityweb.part11","Build/showcase.data.unityweb.part12","Build/showcase.data.unityweb.part13","Build/showcase.data.unityweb.part14","Build/showcase.data.unityweb.part15"],"Build/showcase.wasm.unityweb":["Build/showcase.wasm.unityweb.part00","Build/showcase.wasm.unityweb.part01","Build/showcase.wasm.unityweb.part02","Build/showcase.wasm.unityweb.part03","Build/showcase.wasm.unityweb.part04","Build/showcase.wasm.unityweb.part05","Build/showcase.wasm.unityweb.part06"]}</script><script src="Build/showcase.loader.js"></script>
+<script>
+const canvas=document.getElementById('game'),status=document.getElementById('status'),full=document.getElementById('full');
+const config={dataUrl:"Build/showcase.data.unityweb",frameworkUrl:"Build/showcase.framework.js.unityweb",codeUrl:"Build/showcase.wasm.unityweb",streamingAssetsUrl:"StreamingAssets",companyName:"DefaultCompany",productName:"My feiji",productVersion:"0.1"};
+if(typeof createUnityInstance!=="function"){status.textContent="加载脚本失败，请刷新页面重试。";}
+else (async()=>{
+ const parts=JSON.parse(document.getElementById('chunks').textContent);
+ for(const key of ['dataUrl','codeUrl','frameworkUrl']){
+   const list=parts[config[key]];
+   if(!list) continue;
+   const blocks=await Promise.all(list.map(async url=>{
+     const response=await fetch(url);
+     if(!response.ok) throw new Error('HTTP '+response.status+' '+url);
+     return response.arrayBuffer();
+   }));
+   config[key]=URL.createObjectURL(new Blob(blocks));
+ }
+ return createUnityInstance(canvas,config,p=>{status.textContent="正在加载试玩版… "+Math.round(p*100)+"%";});
+})().then(game=>{status.textContent="加载完成 · 点击游戏画面开始";full.hidden=false;full.onclick=()=>game.SetFullscreen(1);canvas.addEventListener('pointerdown',()=>canvas.focus());}).catch(error=>{status.textContent="加载失败："+error;console.error(error);});
+</script></body></html>
